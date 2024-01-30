@@ -16,6 +16,7 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.AddonAbility;
 import com.projectkorra.projectkorra.ability.CombustionAbility;
 import com.projectkorra.projectkorra.attribute.Attribute;
+import com.projectkorra.projectkorra.region.RegionProtection;
 import com.projectkorra.projectkorra.util.ActionBar;
 import com.projectkorra.projectkorra.util.DamageHandler;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -104,6 +105,11 @@ public class CombustBeam extends CombustionAbility implements AddonAbility {
 				charging = false;
 				curr = player.getEyeLocation();
 				direction = player.getEyeLocation().getDirection().clone().normalize();
+
+				if (RegionProtection.isRegionProtected(this, curr)) {
+					remove();
+					return;
+				}
 				
 				if (player.getHealth() < health) {
 					DamageHandler.damageEntity(player, ProjectAddons.instance.getConfig().getDouble("Abilities.Fire.CombustBeam.InterruptedDamage"), this);
@@ -111,6 +117,11 @@ public class CombustBeam extends CombustionAbility implements AddonAbility {
 					return;
 				}
 				
+				return;
+			}
+
+			if (RegionProtection.isRegionProtected(this, player.getLocation())) {
+				remove();
 				return;
 			}
 
@@ -150,6 +161,11 @@ public class CombustBeam extends CombustionAbility implements AddonAbility {
 					direction.add(to.multiply(1.0 / 20));
 				}
 			}
+
+			if (RegionProtection.isRegionProtected(this, curr)) {
+				remove();
+				return;
+			}
 			
 			direction.normalize();
 			
@@ -160,6 +176,11 @@ public class CombustBeam extends CombustionAbility implements AddonAbility {
 				}
 				
 				curr.add(direction);
+
+				if (RegionProtection.isRegionProtected(this, curr)) {
+					remove();
+					return;
+				}
 				
 				if (!curr.getBlock().isPassable()) {
 					explode();
@@ -212,20 +233,20 @@ public class CombustBeam extends CombustionAbility implements AddonAbility {
 	
 	public void explode() {
 		if (!charging) {
-			if (GeneralMethods.isRegionProtectedFromBuild(player, curr)) {
+			if (RegionProtection.isRegionProtected(this, curr)) {
 				return;
 			}
 			
 			ParticleEffect.EXPLOSION_HUGE.display(curr, 1);
 			player.getWorld().playSound(curr, Sound.ENTITY_GENERIC_EXPLODE, 1, 0);
 			for (Block block : GeneralMethods.getBlocksAroundPoint(curr, power)) {
-				if (block.getType().getBlastResistance() < power) {
+				if (block.getType().getBlastResistance() < power && !RegionProtection.isRegionProtected(this, block.getLocation())) {
 					new TempBlock(block, Material.AIR).setRevertTime(revertTime);
 				}
 			}
 			
 			for (Entity e : GeneralMethods.getEntitiesAroundPoint(curr, power)) {
-				if (e instanceof LivingEntity) {
+				if (e instanceof LivingEntity && !RegionProtection.isRegionProtected(this, e.getLocation())) {
 					double knockback = power / (0.3 + e.getLocation().distance(curr));
 					DamageHandler.damageEntity(e, damage, this);
 					e.setVelocity(GeneralMethods.getDirection(curr, e.getLocation().add(0, 1, 0)).normalize().multiply(knockback));

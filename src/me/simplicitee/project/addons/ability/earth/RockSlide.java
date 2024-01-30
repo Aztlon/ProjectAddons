@@ -6,8 +6,10 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
@@ -167,14 +169,17 @@ public class RockSlide extends EarthAbility implements AddonAbility, ComboAbilit
 				loc = b.getLocation().add(0.5, 1.1, 0.5);
 				
 				if (loc.getBlock().isPassable()) {
-					FallingBlock fb = GeneralMethods.spawnFallingBlock(offset(loc, 0.2, 0.2, 0.2), b.getType(), b.getBlockData());
+					Material cosmetic = earthCosmetic(player);
+					Material type = cosmetic != null ? cosmetic : b.getType();
+					BlockData data = cosmetic != null ? cosmetic.createBlockData() : b.getBlockData();
+					FallingBlock fb = GeneralMethods.spawnFallingBlock(offset(loc, 0.2, 0.2, 0.2), type, data);
 					fb.setMetadata("rockslide", new FixedMetadataValue(ProjectAddons.instance, 0));
 					fb.setDropItem(false);
 					
 					blocks.add(fb);
 					
 					if (Math.random() < 0.23) {
-						ParticleEffect.BLOCK_CRACK.display(fb.getLocation(), 2, 0.4, 0.4, 0.4, b.getBlockData());
+						ParticleEffect.BLOCK_CRACK.display(fb.getLocation(), 2, 0.4, 0.4, 0.4, data);
 					}
 				}
 			}

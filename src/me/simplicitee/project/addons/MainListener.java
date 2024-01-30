@@ -236,9 +236,9 @@ public class MainListener implements Listener {
 			return;
 		}
 		
-		if (canBend(player, "EarthKick")) {
+		/*if (ability.getClass().equals(EarthKick.class) && canBend(player, "EarthKick")) {
 			new EarthKick(player);
-		} else if (canBend(player, "NinjaStance")) {
+		} else */if (canBend(player, "NinjaStance")) {
 			if (CoreAbility.hasAbility(player, NinjaStance.class)) {
 				CoreAbility.getAbility(player, NinjaStance.class).beginStealth();
 			}
