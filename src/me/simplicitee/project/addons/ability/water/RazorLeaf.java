@@ -91,10 +91,10 @@ public class RazorLeaf extends PlantAbility implements AddonAbility {
 				++uses;
 			}
 			
-			Location target = null;
+			Location target;
 			Entity e = GeneralMethods.getTargetedEntity(player, range);
 			
-			if (e == null || !(e instanceof LivingEntity)) {
+			if (!(e instanceof LivingEntity)) {
 				target = GeneralMethods.getTargetedLocation(player, range).add(player.getEyeLocation().getDirection());
 			} else {
 				target = e.getLocation().add(0, 1, 0);

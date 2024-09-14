@@ -182,7 +182,7 @@ public class CombustBeam extends CombustionAbility implements AddonAbility {
 					return;
 				}
 				
-				if (!curr.getBlock().isPassable()) {
+				if (!curr.getBlock().isPassable() || GeneralMethods.checkDiagonalWall(curr, direction)) {
 					explode();
 					return;
 				} else if (curr.getBlock().getType() == Material.WATER) {
